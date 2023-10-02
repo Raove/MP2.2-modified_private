@@ -43,6 +43,7 @@ class InL2Ranker(metapy.index.RankingFunction):
         # return (self.param + sd.doc_term_count) / (self.param * sd.doc_unique_terms + sd.doc_size)
 
 
+# def load_ranker(cfg_file, k1, b, idf):
 def load_ranker(cfg_file):
     """
     Use this function to return the Ranker object to evaluate, 
@@ -50,9 +51,9 @@ def load_ranker(cfg_file):
     configuration file used to load the index.
     """
     #BM25
-    k1 = 1.915
-    b = 0.7455
-    idf = 600
+    k1 = 1.90079
+    b = 0.743
+    idf = 114
     #PivotedLength
     s = 0.2
     #AbsoluteDiscount
@@ -76,7 +77,19 @@ if __name__ == '__main__':
 
     cfg = sys.argv[1]
     print('Building or loading index...')
+    # k1 = 1.89
+    # b = 0.7
+    # idf = 100
+    # best = 0
+    # while k1 <= 1.93:        
+    #     print("k1 :", k1)
+    #     b = 0.7
+    #     while b <= 0.8:
+    #         print("b :",b)
+    #         idf = 100
+    #         while idf <= 500:
     idx = metapy.index.make_inverted_index(cfg)
+    # ranker = load_ranker(cfg, k1, b, idf)
     ranker = load_ranker(cfg)
     ev = metapy.index.IREval(cfg)
 
@@ -94,9 +107,8 @@ if __name__ == '__main__':
     query_start = query_cfg.get('query-id-start', 0)
 
     query = metapy.index.Document()
-    ndcg = 0.1
+    ndcg = 0.0
     num_queries = 0
-
     print('Running queries')
     with open(query_path) as query_file:
         for query_num, line in enumerate(query_file):
@@ -108,3 +120,12 @@ if __name__ == '__main__':
             
     print("NDCG@{}: {}".format(top_k, ndcg))
     print("Elapsed: {} seconds".format(round(time.time() - start_time, 4)))
+    #             if ndcg > best:
+    #                 best = ndcg 
+    #                 highestk1 = k1
+    #                 highestb = b
+    #                 highestidf = idf
+    #             idf += 1
+    #         b += 0.01
+    #     k1 += 0.001
+    # print("Highest NDCG and best ", highestk1, highestb, highestidf, best)
