@@ -16,3 +16,8 @@ filter = "default-unigram-chain"
 query-path = "cranfield-queries.txt"
 query-id-start = 1
 
+[ranker]
+method = "bm25"
+k1 = 1.2
+b = 0.75
+k3 = 500
