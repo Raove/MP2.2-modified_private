@@ -4,6 +4,44 @@ import time
 import metapy
 import pytoml
 
+class InL2Ranker(metapy.index.RankingFunction):
+    """
+    Create a new ranking function in Python that can be used in MeTA.
+    """
+    def __init__(self, some_param=1.0):
+        self.param = some_param
+        # You *must* call the base class constructor here!
+        super(InL2Ranker, self).__init__()
+
+    def score_one(self, sd):
+        """
+        You need to override this function to return a score for a single term.
+        For fields available in the score_data sd object,
+        @see https://meta-toolkit.org/doxygen/structmeta_1_1index_1_1score__data.html
+        """
+        score = 0
+        # Q = "query"
+        # D = "document"
+        # t = "term"
+        # N = "number of docs in corpus C"
+        # avgdl = "length"
+        # c > 0
+        # C = "corpus"
+        # ctD = "query term count"
+        # ctC = "number of times term t appears in the corpus"
+        
+        D = sd.doc_size
+        t = sd.t_id
+        avgdl = sd.avg_dl
+        N = sd.num_docs
+        ctD = sd.doc_term_count
+        ctC = sd.corpus_term_count
+        tfn = ctD * math.log(1 + (avgdl / abs(D)), 2)
+        score = sd.query_term_weight * (tfn / (tfn + self.param)) * math.log((N + 1) / (ctC + 0.5),2)
+        
+        return score
+        # return (self.param + sd.doc_term_count) / (self.param * sd.doc_unique_terms + sd.doc_size)
+
 
 def load_ranker(cfg_file):
     """
@@ -11,7 +49,25 @@ def load_ranker(cfg_file):
     The parameter to this function, cfg_file, is the path to a
     configuration file used to load the index.
     """
-    return metapy.index.OkapiBM25(1.2, 0.75, 500)
+    #BM25
+    k1 = 1.915
+    b = 0.7455
+    idf = 600
+    #PivotedLength
+    s = 0.2
+    #AbsoluteDiscount
+    delta = 0.7
+    #JelinkMercer
+    lambda1 = 0.7
+    #DirichletPrior
+    mu = 2000
+
+    return metapy.index.OkapiBM25(k1, b, idf)
+    # return metapy.index.PivotedLength(s)
+    # return metapy.index.AbsoluteDiscount(delta)
+    # return metapy.index.JelinekMercer(lambda1)
+    # return metapy.index.DirichletPrior(mu)
+    # return InL2Ranker()
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
