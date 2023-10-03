@@ -39,11 +39,10 @@ class InL2Ranker(metapy.index.RankingFunction):
         tfn = ctD * math.log(1 + (avgdl / abs(D)), 2)
         score = sd.query_term_weight * (tfn / (tfn + self.param)) * math.log((N + 1) / (ctC + 0.5),2)
         
-        return score
+        return score 
         # return (self.param + sd.doc_term_count) / (self.param * sd.doc_unique_terms + sd.doc_size)
 
 
-# def load_ranker(cfg_file, k1, b, idf):
 def load_ranker(cfg_file):
     """
     Use this function to return the Ranker object to evaluate, 
@@ -51,27 +50,27 @@ def load_ranker(cfg_file):
     configuration file used to load the index.
     """
     #BM25
-    # k1 = 1.90079
-    # b = 0.743
-    # idf = 114
-    k1 = 1.9059
+    k1 = 1.90079
     b = 0.743
-    idf = 350
+    idf = 114
+    # k1 = 1.9059
+    # b = 0.743
+    # idf = 350
     #PivotedLength
-    s = 0.2
+    # s = 0.348
     #AbsoluteDiscount
-    delta = 0.7
+    # delta = 0.722
     #JelinkMercer
-    lambda1 = 0.7
+    # lambda1 = 0.611
     #DirichletPrior
-    mu = 2000
+    # mu = 1049
 
-    return metapy.index.OkapiBM25(k1, b, idf)
-    # return metapy.index.PivotedLength(s)
-    # return metapy.index.AbsoluteDiscount(delta)
-    # return metapy.index.JelinekMercer(lambda1)
-    # return metapy.index.DirichletPrior(mu)
-    # return InL2Ranker()
+    return metapy.index.OkapiBM25(k1, b, idf) #.361814
+    # return metapy.index.PivotedLength(s) #.351038
+    # return metapy.index.AbsoluteDiscount(delta) #.347161
+    # return metapy.index.JelinekMercer(lambda1) #.348386
+    # return metapy.index.DirichletPrior(mu) #.322159
+    # return InL2Ranker() #.31 trash
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -80,19 +79,7 @@ if __name__ == '__main__':
 
     cfg = sys.argv[1]
     print('Building or loading index...')
-    # k1 = 1.89
-    # b = 0.7
-    # idf = 100
-    # best = 0
-    # while k1 <= 1.93:        
-    #     print("k1 :", k1)
-    #     b = 0.7
-    #     while b <= 0.8:
-    #         print("b :",b)
-    #         idf = 100
-    #         while idf <= 500:
     idx = metapy.index.make_inverted_index(cfg)
-    # ranker = load_ranker(cfg, k1, b, idf)
     ranker = load_ranker(cfg)
     ev = metapy.index.IREval(cfg)
 
@@ -123,12 +110,3 @@ if __name__ == '__main__':
             
     print("NDCG@{}: {}".format(top_k, ndcg))
     print("Elapsed: {} seconds".format(round(time.time() - start_time, 4)))
-    #             if ndcg > best:
-    #                 best = ndcg 
-    #                 highestk1 = k1
-    #                 highestb = b
-    #                 highestidf = idf
-    #             idf += 1
-    #         b += 0.01
-    #     k1 += 0.001
-    # print("Highest NDCG and best ", highestk1, highestb, highestidf, best)
