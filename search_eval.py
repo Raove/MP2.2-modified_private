@@ -51,12 +51,12 @@ def load_ranker(cfg_file):
     configuration file used to load the index.
     """
     #BM25
-    k1 = 1.90079
-    b = 0.743
-    idf = 114
-    # k1 = 1.9059
+    # k1 = 1.90079
     # b = 0.743
-    # idf = 350
+    # idf = 114
+    k1 = 1.9059
+    b = 0.743
+    idf = 350
     #PivotedLength
     s = 0.2
     #AbsoluteDiscount
